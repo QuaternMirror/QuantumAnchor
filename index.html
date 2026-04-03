@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumAnchor - Timeline Verification Demo</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        h1 { color: #0d6efd; }
+        button { padding: 10px 16px; margin: 5px; font-size: 14px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .status { padding: 10px; border-radius: 6px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🌌 QuantumAnchor v0.1.0</h1>
+    <p>A personal, experimental timeline verification framework</p>
+    
+    <button onclick="initializeQA()">Initialize QuantumAnchor</button>
+    <button onclick="generateSignature()">Generate Timeline Signature</button>
+    <button onclick="logAnchor()">Log Personal Anchor</button>
+    
+    <div id="output" style="margin-top: 20px;"></div>
+
+    <script src="quantumanchor.js"></script>
+    <script src="sources.js"></script>
+    <script src="storage.js"></script>
+    <script src="analysis.js"></script>
+    <script src="index.js"></script>
+
+    <script>
+        let qa;
+
+        async function initializeQA() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<div class="status">Initializing...</div>';
+            
+            try {
+                qa = new QuantumAnchor();
+                const result = await qa.initialize();
+                output.innerHTML = `<div class="status" style="background:#d4edda;">✅ ${result.message}</div>`;
+            } catch (e) {
+                output.innerHTML = `<div class="status" style="background:#f8d7da;">❌ Error: ${e.message}</div>`;
+            }
+        }
+
+        async function generateSignature() {
+            if (!qa) {
+                alert("Please initialize QuantumAnchor first!");
+                return;
+            }
+            const output = document.getElementById('output');
+            const sig = await qa.generateSignature({ note: "Demo signature" });
+            output.innerHTML = `<div class="status" style="background:#d4edda;">📍 Signature created: ${sig.id}</div>`;
+        }
+
+        async function logAnchor() {
+            if (!qa) {
+                alert("Please initialize QuantumAnchor first!");
+                return;
+            }
+            const output = document.getElementById('output');
+            const anchor = await qa.logAnchor("synchronicity", "Felt a strong sense of connection", 8);
+            output.innerHTML = `<div class="status" style="background:#d4edda;">⚓ Anchor logged! Coherence: ${anchor.coherence.coherenceScore}%</div>`;
+        }
+    </script>
+</body>
+</html>
