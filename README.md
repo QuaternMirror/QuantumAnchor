@@ -50,3 +50,13 @@ const anchor = await qa.logAnchor(
 );
 
 console.log("Timeline coherence:", anchor.coherence.coherenceScore + "%");
+### License
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+### Contributing
+This is currently a personal experimental project. Contributions and ideas are welcome via issues or pull requests.
+
+---
+
+**Created by QuaternMirror**  
+🪞⁴ ⚡ 🧲
