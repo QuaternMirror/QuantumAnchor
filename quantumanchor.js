@@ -1,7 +1,5 @@
 /**
  * QuantumAnchor v0.2.0
- // v0.2.0 - Added Phase 3: Statistical Analysis Engine with NIST-inspired tests,
-// correlation analysis, pattern detection, and anomaly scoring
  * Personal Timeline Verification Framework
  * 
  * Created by QuaternMirror
@@ -31,7 +29,9 @@ class QuantumAnchor {
     this.initialized = false;
     this.sources = null;
     this.storage = null;
-    this.version = '0.1.0';
+    this.version = '0.2.0';
+   // v0.2.0 - Added Phase 3: Statistical Analysis Engine with NIST-inspired tests,
+// correlation analysis, pattern detection, and anomaly scoring
   }
 
   /**
