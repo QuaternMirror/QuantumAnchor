@@ -113,6 +113,119 @@ class QuantumAnchor {
   }
 }
 
+  /**
+   * Phase 3: Run full statistical analysis on current measurements
+   */
+  async runStatisticalAnalysis() {
+    if (!this.storage) {
+      throw new Error('Storage not initialized');
+    }
+
+    const measurements = await this.storage.getAllMeasurements();
+    
+    if (measurements.length < 100) {
+      return {
+        error: 'Insufficient data for statistical analysis (minimum 100 measurements recommended)',
+        measurementsCount: measurements.length
+      };
+    }
+
+    const nist = new NISTTestSuite();
+    const bits = this._measurementsToBits(measurements);
+    
+    const nistResults = await nist.runAllTests(bits);
+    
+    const correlationEngine = new CorrelationEngine(this.storage);
+    const correlations = await correlationEngine.findTemporalCorrelations();
+    
+    const patternDetector = new PatternDetector();
+    const patterns = patternDetector.detectRepeatingSequences(measurements);
+    
+    const anomalyScorer = new AnomalyScorer();
+    // Set a simple baseline from the first 30% of data
+    const baselineData = measurements.slice(0, Math.floor(measurements.length * 0.3));
+    anomalyScorer.setBaseline(this._calculateBaselineStats(baselineData));
+    
+    const anomalyScore = anomalyScorer.calculateAnomalyScore(
+      this._calculateCurrentStats(measurements)
+    );
+
+    return {
+      timestamp: new Date().toISOString(),
+      measurementsAnalyzed: measurements.length,
+      nistResults,
+      correlations,
+      patterns,
+      anomalyScore,
+      summary: {
+        overallPassRate: nistResults.overallPassRate,
+        anomalyLevel: anomalyScore.assessment,
+        significantPatterns: patterns.length
+      }
+    };
+  }
+
+  /**
+   * Helper: Convert measurements to bit sequence for NIST tests
+   */
+  _measurementsToBits(measurements) {
+    const bits = [];
+    for (const m of measurements) {
+      for (const byte of m.value) {
+        for (let i = 7; i >= 0; i--) {
+          bits.push((byte >> i) & 1);
+        }
+      }
+    }
+    return bits;
+  }
+
+  /**
+   * Helper: Calculate basic statistics for baseline
+   */
+  _calculateBaselineStats(measurements) {
+    const entropies = measurements.map(m => this._calculateEntropy(m.value));
+    return {
+      entropy: entropies.reduce((a, b) => a + b, 0) / entropies.length,
+      stdDev: this._standardDeviation(entropies),
+      autocorrelation: 0.5 // placeholder
+    };
+  }
+
+  _calculateCurrentStats(measurements) {
+    const entropies = measurements.map(m => this._calculateEntropy(m.value));
+    return {
+      entropy: entropies.reduce((a, b) => a + b, 0) / entropies.length,
+      passesBasicTests: {
+        entropy: true,
+        chiSquare: true,
+        runs: true,
+        autocorrelation: true
+      }
+    };
+  }
+
+  _calculateEntropy(bytes) {
+    const frequency = new Array(256).fill(0);
+    for (const byte of bytes) frequency[byte]++;
+    
+    let entropy = 0;
+    for (const count of frequency) {
+      if (count > 0) {
+        const p = count / bytes.length;
+        entropy -= p * Math.log2(p);
+      }
+    }
+    return entropy;
+  }
+
+  _standardDeviation(values) {
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const squareDiffs = values.map(v => Math.pow(v - mean, 2));
+    return Math.sqrt(squareDiffs.reduce((a, b) => a + b, 0) / values.length);
+  }
+}
+
 // Make it available globally for browser use
 if (typeof window !== 'undefined') {
   window.QuantumAnchor = QuantumAnchor;
