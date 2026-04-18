@@ -8,7 +8,22 @@
  * A lightweight experimental tool for generating and comparing 
  * timeline signatures using quantum-inspired randomness and personal anchors.
  */
+// ============================================================================
+// PHASE 3: STATISTICAL ANALYSIS ENGINE (Imported)
+// ============================================================================
 
+// Import Phase 3 modules (browser-friendly)
+let NISTTestSuite, CorrelationEngine, PatternDetector, AnomalyScorer;
+
+if (typeof window !== 'undefined' && window.QTVSPhase3) {
+  ({ NISTTestSuite, CorrelationEngine, PatternDetector, AnomalyScorer } = window.QTVSPhase3);
+} else {
+  // Fallback for environments without Phase 3 loaded yet
+  NISTTestSuite = class { constructor() {} async runAllTests() { return { error: "Phase 3 not loaded" }; } };
+  CorrelationEngine = class { constructor() {} };
+  PatternDetector = class { constructor() {} };
+  AnomalyScorer = class { constructor() {} };
+}
 class QuantumAnchor {
   constructor() {
     this.initialized = false;
