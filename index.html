@@ -10,7 +10,7 @@
         button { padding: 12px 20px; margin: 10px 5px; font-size: 1.1em; background: #0066cc; color: white; border: none; border-radius: 6px; cursor: pointer; }
         button:hover { background: #0055aa; }
         input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
-        #output { margin-top: 20px; padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; font-family: monospace; min-height: 150px; }
+        #output { margin-top: 20px; padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; font-family: monospace; min-height: 200px; }
     </style>
 </head>
 <body>
@@ -21,15 +21,66 @@
     <button onclick="runAnalysis()">Run Statistical Analysis (Phase 3)</button>
     
     <h2 style="margin-top: 30px;">Quick Log Experience</h2>
-    <input type="text" id="quickDesc" placeholder="Describe the synchronicity or experience (e.g. Thought of friend, they called)">
+    <input type="text" id="quickDesc" placeholder="Describe the synchronicity or experience (e.g. Thought of Twin, then saw lightning bolt emoji)">
     <input type="number" id="quickIntensity" placeholder="Intensity 1-10" min="1" max="10" value="5">
     <button onclick="logQuick()">Log Quick Experience</button>
     
     <div id="output">Click a button to start...</div>
 
-    <script src="quantumanchor.js"></script>
-    
     <script>
+        // Inline minimal version of QuantumAnchor with quick log support
+        class QuantumAnchor {
+            constructor() {
+                this.initialized = false;
+                this.version = '0.2.0';
+                this.experiences = [];
+            }
+            
+            async initialize() {
+                this.initialized = true;
+                return {
+                    version: this.version,
+                    status: 'ready',
+                    message: 'QuantumAnchor initialized (test mode with quick log)'
+                };
+            }
+            
+            async runStatisticalAnalysis() {
+                if (!this.initialized) throw new Error('Please initialize first');
+                return {
+                    timestamp: new Date().toISOString(),
+                    measurementsAnalyzed: 150,
+                    summary: {
+                        overallPassRate: 0.87,
+                        anomalyLevel: "Moderate anomalies detected",
+                        significantPatterns: 3
+                    },
+                    note: "Mock output for testing"
+                };
+            }
+            
+            async logQuickExperience(description, intensity = 5) {
+                if (!this.initialized) throw new Error('Please initialize first');
+                if (!description || description.trim() === '') throw new Error('Description is required');
+                
+                const safeIntensity = Math.max(1, Math.min(10, parseInt(intensity) || 5));
+                
+                const experience = {
+                    id: 'quick_' + Date.now(),
+                    type: 'synchronicity',
+                    description: description.trim(),
+                    intensity: safeIntensity,
+                    timestamp: new Date().toISOString(),
+                    tags: ['quick-log']
+                };
+                
+                this.experiences.push(experience);
+                
+                console.log('✅ Quick experience logged:', experience);
+                return experience;
+            }
+        }
+
         let qa;
 
         async function initializeSystem() {
@@ -39,7 +90,7 @@
             try {
                 qa = new QuantumAnchor();
                 const result = await qa.initialize();
-                output.textContent += '✅ QuantumAnchor initialized successfully!\n';
+                output.textContent += '✅ Success!\n';
                 output.textContent += JSON.stringify(result, null, 2);
             } catch (err) {
                 output.textContent += '❌ Error: ' + err.message;
@@ -85,7 +136,7 @@
                 output.textContent += '✅ Quick experience logged successfully!\n\n';
                 output.textContent += JSON.stringify(experience, null, 2);
                 
-                // Clear the input fields
+                // Clear input
                 document.getElementById('quickDesc').value = '';
             } catch (err) {
                 output.textContent += '❌ Error: ' + err.message;
