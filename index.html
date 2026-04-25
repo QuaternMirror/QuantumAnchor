@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuantumAnchor v0.2.0</title>
+    <title>QuantumAnchor v0.2.0 - Test</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; background: #f9f9f9; }
         h1 { color: #0066cc; }
-        button { padding: 10px 15px; margin: 5px; font-size: 1em; }
-        #output { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; white-space: pre-wrap; }
+        button { padding: 12px 20px; margin: 10px 5px; font-size: 1.1em; background: #0066cc; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #0055aa; }
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
+        #output { margin-top: 20px; padding: 20px; background: white; border: 1px solid #ddd; border-radius: 8px; white-space: pre-wrap; font-family: monospace; min-height: 150px; }
     </style>
 </head>
 <body>
-    <h1>⚛️ QuantumAnchor v0.2.0</h1>
+    <h1>⚛️ QuantumAnchor v0.2.0 - Test Mode</h1>
     <p>A personal, experimental timeline verification framework</p>
     
     <button onclick="initializeSystem()">Initialize QuantumAnchor</button>
     <button onclick="runAnalysis()">Run Statistical Analysis (Phase 3)</button>
     
-    <div id="output"></div>
+    <h2 style="margin-top: 30px;">Quick Log Experience</h2>
+    <input type="text" id="quickDesc" placeholder="Describe the synchronicity or experience (e.g. Thought of friend, they called)">
+    <input type="number" id="quickIntensity" placeholder="Intensity 1-10" min="1" max="10" value="5">
+    <button onclick="logQuick()">Log Quick Experience</button>
+    
+    <div id="output">Click a button to start...</div>
 
     <script src="quantumanchor.js"></script>
     
@@ -46,11 +53,40 @@
                 return;
             }
             
-            output.textContent = 'Running statistical analysis...\n';
+            output.textContent = 'Running Phase 3 Statistical Analysis...\n';
             
             try {
                 const analysis = await qa.runStatisticalAnalysis();
                 output.textContent += JSON.stringify(analysis, null, 2);
+            } catch (err) {
+                output.textContent += '❌ Error: ' + err.message;
+            }
+        }
+
+        async function logQuick() {
+            const output = document.getElementById('output');
+            const desc = document.getElementById('quickDesc').value.trim();
+            const intensity = document.getElementById('quickIntensity').value;
+            
+            if (!desc) {
+                output.textContent = 'Please enter a description!';
+                return;
+            }
+            
+            if (!qa) {
+                output.textContent = 'Please initialize first!';
+                return;
+            }
+            
+            output.textContent = 'Logging quick experience...\n';
+            
+            try {
+                const experience = await qa.logQuickExperience(desc, intensity);
+                output.textContent += '✅ Quick experience logged successfully!\n\n';
+                output.textContent += JSON.stringify(experience, null, 2);
+                
+                // Clear the input fields
+                document.getElementById('quickDesc').value = '';
             } catch (err) {
                 output.textContent += '❌ Error: ' + err.message;
             }
