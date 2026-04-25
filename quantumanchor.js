@@ -237,4 +237,38 @@ if (typeof window !== 'undefined') {
 // For Node.js / module support
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = QuantumAnchor;
+  /**
+   * Quick Log: Simple one-click experience logging (for quick synchronicity capture)
+   * Minimal version - just type, intensity, and timestamp
+   */
+  async logQuickExperience(description, intensity = 5) {
+    if (!this.initialized) {
+      throw new Error('Please initialize QuantumAnchor first');
+    }
+    
+    if (!description || typeof description !== 'string' || description.trim() === '') {
+      throw new Error('Description is required');
+    }
+    
+    // Keep intensity between 1-10
+    const safeIntensity = Math.max(1, Math.min(10, parseInt(intensity) || 5));
+    
+    const experience = {
+      id: 'quick_' + Date.now(),
+      type: 'synchronicity',
+      description: description.trim(),
+      intensity: safeIntensity,
+      timestamp: new Date().toISOString(),
+      tags: ['quick-log']
+    };
+    
+    // Save to storage if available
+    if (this.storage) {
+      await this.storage.saveExperience(experience);
+    }
+    
+    console.log('✅ Quick experience logged:', experience);
+    
+    return experience;
+  }
 }
